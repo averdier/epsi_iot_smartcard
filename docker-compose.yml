@@ -1,0 +1,53 @@
+version: '2'
+
+services:
+
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    ports:
+      - 5432:5432
+    networks:
+      - services_network
+
+  auth:
+    image: epsi_iot_auth
+    command: sh /auth/start.sh
+    depends_on:
+      - db
+    volumes:
+      - sockets:/sockets/
+    networks:
+      - services_network
+
+  mqtt:
+    build: ./mosquitto
+    depends_on:
+      - auth
+    ports:
+      - 1883:1883
+      - 9001:9001
+    networks:
+      - services_network
+
+  nginx:
+    build: ./nginx
+    depends_on:
+      - auth
+    ports:
+      - 80:80
+    depends_on:
+      - auth
+    networks:
+      - services_network
+    volumes:
+      - sockets:/sockets/
+
+volumes:
+  sockets:
+    driver: local
+
+networks:
+  services_network:
+    driver: bridge
