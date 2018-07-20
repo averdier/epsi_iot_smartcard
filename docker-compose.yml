@@ -43,6 +43,13 @@ services:
       - services_network
     volumes:
       - sockets:/sockets/
+      
+  iotapi:
+    build: ./iotApi
+    ports:
+      - 4500:4500
+    networks:
+      - services_network
 
 volumes:
   sockets:
