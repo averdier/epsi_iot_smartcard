@@ -31,6 +31,17 @@ services:
     networks:
       - services_network
 
+  call_service:
+    image: epsi_iot_call
+    command: python /app/run_app.py
+    environment:
+      - MQTT_SERVER:mqtt
+    depends_on:
+      - mqtt
+    networks:
+      - services_network
+    
+
   nginx:
     build: ./nginx
     depends_on:
